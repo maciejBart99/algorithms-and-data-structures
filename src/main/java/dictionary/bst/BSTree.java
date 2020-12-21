@@ -10,10 +10,10 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Random;
 
-public class BSTTree<K extends Comparable<K>,T> implements SimpleDictionary<K, T> {
-    private BSTNode<K, T> root = null;
+public class BSTree<K extends Comparable<K>,T> implements SimpleDictionary<K, T> {
+    protected BSTNode<K, T> root = null;
     private final Random branchRandomSelector = new Random();
-    private int count = 0;
+    protected int count = 0;
 
     private BSTNode<K, T> FindSmallestR(BSTNode<K, T> currentRoot) {
         if (currentRoot.getLeft() != null) return FindSmallestR(currentRoot.getLeft());

@@ -1,9 +1,13 @@
 package dictionary.splay;
 
 import dictionary.bst.BSTNode;
-import dictionary.bst.BSTTree;
+import dictionary.bst.BSTree;
+import dictionary.exceptions.KeyAlreadyExistsException;
+import dictionary.exceptions.KeyNotFoundException;
 
-public class SplayTree<K extends Comparable<K>, T> extends BSTTree<K,T> {
+import java.util.Optional;
+
+public class SplayTree<K extends Comparable<K>, T> extends BSTree<K,T> {
 
     //Basic rotations
     private BSTNode<K,T> RR(BSTNode<K,T> subRoot) {
@@ -77,12 +81,14 @@ public class SplayTree<K extends Comparable<K>, T> extends BSTTree<K,T> {
                     switch (p.getKey().compareTo(key)) {
                         case 1 -> {
                             if(p.getLeft() != null) {
-                                subRoot = LZigZig(SplayR(subRoot, key));
+                                p.setLeft(SplayR(p.getLeft(), key));
+                                subRoot = LZigZig(subRoot);
                             } else subRoot = LZig(subRoot);
                         }
                         case -1 -> {
                             if(p.getRight() != null) {
-                                subRoot = LZigZag(SplayR(subRoot, key));
+                                p.setRight(SplayR(p.getRight(), key));
+                                subRoot = LZigZag(subRoot);
                             } else subRoot = LZig(subRoot);
                         }
                         default -> subRoot = LZig(subRoot);
@@ -95,12 +101,14 @@ public class SplayTree<K extends Comparable<K>, T> extends BSTTree<K,T> {
                     switch (p.getKey().compareTo(key)) {
                         case 1 -> {
                             if(p.getLeft() != null) {
-                                subRoot = RZigZag(SplayR(subRoot, key));
+                                p.setLeft(SplayR(p.getLeft(), key));
+                                subRoot = RZigZag(subRoot);
                             } else subRoot = RZig(subRoot);
                         }
                         case -1 -> {
                             if(p.getRight() != null) {
-                                subRoot = RZigZig(SplayR(subRoot, key));
+                                p.setRight(SplayR(p.getRight(), key));
+                                subRoot = RZigZig(subRoot);
                             } else subRoot = RZig(subRoot);
                         }
                         default -> subRoot = RZig(subRoot);
@@ -109,5 +117,49 @@ public class SplayTree<K extends Comparable<K>, T> extends BSTTree<K,T> {
             }
         }
         return subRoot;
+    }
+
+    @Override
+    public void Insert(K key, T item) throws KeyAlreadyExistsException {
+        BSTNode<K, T> newNode = new BSTNode<>(key, item, null, null);
+        if (root != null) {
+            root = SplayR(root, key);
+            switch (root.getKey().compareTo(key)) {
+                case 0 -> throw new KeyAlreadyExistsException();
+                case 1 -> {
+                    newNode.setLeft(root.getLeft());
+                    newNode.setRight(root);
+                    root.setLeft(null);
+                }
+                case -1 -> {
+                    newNode.setRight(root.getRight());
+                    newNode.setLeft(root);
+                    root.setRight(null);
+                }
+            }
+        }
+        root = newNode;
+        count++;
+    }
+
+    @Override
+    public void Delete(K key) throws KeyNotFoundException {
+        if (root == null) throw new KeyNotFoundException();
+        root = SplayR(root, key);
+        if (root.getKey().compareTo(key) != 0) throw new KeyNotFoundException();
+        if (root.getLeft() == null) root = root.getRight();
+        else {
+            root.setLeft(SplayR(root.getLeft(), key));
+            root.getLeft().setRight(root.getRight());
+            root = root.getLeft();
+        }
+        count--;
+    }
+
+    @Override
+    public Optional<T> Get(K key) {
+        if (root == null) return Optional.empty();
+        root = SplayR(root, key);
+        return root.getKey().compareTo(key) == 0 ? Optional.of(root.getValue()) : Optional.empty();
     }
 }

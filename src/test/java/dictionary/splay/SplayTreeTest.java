@@ -1,7 +1,4 @@
-package dictionary.bst;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+package dictionary.splay;
 
 import dictionary.SimpleDictionary;
 import dictionary.exceptions.KeyAlreadyExistsException;
@@ -11,13 +8,16 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-class BSTTreeTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class SplayTreeTest {
 
     private SimpleDictionary<Integer, Integer> dict;
 
     @BeforeEach
     public void Setup() {
-        this.dict = new BSTTree<>();
+        this.dict = new SplayTree<>();
     }
 
     @Test
